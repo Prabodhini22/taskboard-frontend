@@ -77,6 +77,10 @@ export default function BoardDetailPage() {
               cards: l.cards.filter((c) => c.id !== deletedId),
             }));
           }
+                    case "LIST_DELETED": {
+            const deletedListId = payload; // payload is just the list id
+            return prevLists.filter((l) => l.id !== deletedListId);
+          }
           default:
             return prevLists;
         }
@@ -118,6 +122,14 @@ export default function BoardDetailPage() {
     }
   }
 
+  async function handleDeleteList(listId) { 
+    try {
+       await api.deleteList(boardId, listId);
+       } catch (err) { 
+        setError(err.message);
+       }
+     }
+
   return (
     <div className="min-h-screen flex flex-col">
       <header className="px-6 py-4 border-b border-border flex items-center justify-between">
@@ -148,6 +160,7 @@ export default function BoardDetailPage() {
                 recentlyUpdatedIds={recentlyUpdatedIds}
                 onAddCard={handleAddCard}
                 onDeleteCard={handleDeleteCard}
+                    onDeleteList={handleDeleteList}
               />
             ))}
 

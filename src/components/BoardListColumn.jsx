@@ -1,7 +1,7 @@
 import { useState } from "react";
 import BoardCard from "./BoardCard";
 
-export default function BoardListColumn({ list, recentlyUpdatedIds, onAddCard, onDeleteCard }) {
+export default function BoardListColumn({ list, recentlyUpdatedIds, onAddCard, onDeleteCard, onDeleteList }) {
   const [adding, setAdding] = useState(false);
   const [title, setTitle] = useState("");
 
@@ -15,9 +15,18 @@ export default function BoardListColumn({ list, recentlyUpdatedIds, onAddCard, o
 
   return (
     <div className="w-72 shrink-0 bg-surface border border-border rounded-lg p-3 flex flex-col max-h-full">
-      <div className="flex items-center justify-between mb-3 px-1">
+            <div className="flex items-center justify-between mb-3 px-1">
         <h3 className="text-paper font-medium text-sm">{list.title}</h3>
-        <span className="font-mono text-[10px] text-paper-dim">{list.cards.length}</span>
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-[10px] text-paper-dim">{list.cards.length}</span>
+          <button
+            onClick={() => onDeleteList(list.id)}
+            className="text-paper-dim hover:text-danger text-xs"
+            aria-label="Delete list"
+          >
+            ✕
+          </button>
+        </div>
       </div>
 
       <div className="space-y-2 overflow-y-auto">

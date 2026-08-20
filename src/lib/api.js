@@ -38,6 +38,9 @@ export const api = {
   createList: (boardId, data) =>
     request(`/boards/${boardId}/lists`, { method: "POST", body: JSON.stringify(data) }),
 
+   deleteList: (boardId, listId) => 
+    request(`/boards/${boardId}/lists/${listId}`, { method: "DELETE" }),
+
   createCard: (boardId, listId, data) =>
     request(`/boards/${boardId}/lists/${listId}/cards`, {
       method: "POST",
