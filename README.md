@@ -44,6 +44,7 @@ second, no refresh needed. This is the best thing to show off in an
 interview or a demo GIF for your README.
 
 https://github.com/user-attachments/assets/4e04912c-826b-40c3-a621-04814f3377fc
+
 GitHub automatically renders a pasted attachment URL like this as an inline video player — no special markdown syntax needed, just the bare URL on its own line.
 
 ## Deploying

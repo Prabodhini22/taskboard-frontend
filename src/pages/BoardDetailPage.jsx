@@ -10,6 +10,7 @@ export default function BoardDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [newListTitle, setNewListTitle] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [connected, setConnected] = useState(false);
 
   // Tracks card ids that just changed via WebSocket, so we can flash them
@@ -147,22 +148,35 @@ export default function BoardDetailPage() {
       </header>
 
       <main className="flex-1 px-6 py-6 overflow-x-auto">
+        {!loading && ( 
+          <input className="input-field text-sm mb-4 max-w-xs" placeholder="Search cards…" 
+          value={searchQuery} onChange={
+            (e) => setSearchQuery(e.target.value)
+            } />
+             )
+          }
+
         {error && <p className="text-danger text-sm mb-4">{error}</p>}
 
         {loading ? (
           <p className="text-paper-dim">Loading…</p>
         ) : (
           <div className="flex gap-4 h-full items-start">
-            {lists.map((list) => (
+            {lists.map((list) => {
+                 const filteredCards = searchQuery.trim() ? list.cards.filter((c) => c.title.toLowerCase().includes(searchQuery.toLowerCase()) ) : list.cards;
+                  return (
               <BoardListColumn
                 key={list.id}
-                list={list}
+                 list={{ ...list, cards: filteredCards }} 
                 recentlyUpdatedIds={recentlyUpdatedIds}
                 onAddCard={handleAddCard}
                 onDeleteCard={handleDeleteCard}
                     onDeleteList={handleDeleteList}
               />
-            ))}
+             ); 
+            }
+          )
+        } 
 
             <form
               onSubmit={handleAddList}
