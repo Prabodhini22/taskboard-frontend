@@ -1,5 +1,11 @@
 # Taskboard — Frontend (React + Vite)
 
+**Live demo:** 
+https://taskboard-frontend-iota.vercel.app **Backend API:**
+https://taskboard-app-ay48.onrender.com 
+Note: first load may take 30-50s if the backend has been idle (Render free tier spins down). 
+
+
 React frontend for the mini-Trello task board: auth, boards, lists, cards,
 and live updates via WebSocket (STOMP over SockJS).
 
