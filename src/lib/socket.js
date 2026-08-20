@@ -10,7 +10,7 @@ import { getToken } from "./api";
  */
 export function subscribeToBoard(boardId, onEvent) {
   const client = new Client({
-    webSocketFactory: () => new SockJS("/ws"),
+    webSocketFactory: () => new SockJS(import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/ws` : "/ws"),
     connectHeaders: {
       Authorization: `Bearer ${getToken() || ""}`,
     },
