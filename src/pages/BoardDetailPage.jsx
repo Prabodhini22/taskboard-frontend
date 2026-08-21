@@ -107,13 +107,14 @@ export default function BoardDetailPage() {
     }
   }
 
-  async function handleAddCard(listId, title) {
-    try {
-      await api.createCard(boardId, listId, { title });
-    } catch (err) {
-      setError(err.message);
-    }
-  }
+
+      async function handleAddCard(listId, title, dueDate) {
+         try { await api.createCard(boardId, listId, {title, dueDate }); 
+        } 
+          catch (err) {
+             setError(err.message);
+       }
+     }
 
   async function handleDeleteCard(cardId) {
     try {

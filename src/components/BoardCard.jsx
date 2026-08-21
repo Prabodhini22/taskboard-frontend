@@ -10,6 +10,14 @@ function timeAgo(isoString) {
   return `${Math.floor(hours / 24)}d ago`;
 }
 
+function isOverdue(dueDate) { 
+  if (!dueDate) 
+    return false; 
+  const today = new Date(); 
+  today.setHours(0, 0, 0, 0); 
+  return new Date(dueDate) < today;
+ }
+
 export default function BoardCard({ card, justUpdated, onDelete }) {
   const [flash, setFlash] = useState(false);
 
@@ -22,11 +30,12 @@ export default function BoardCard({ card, justUpdated, onDelete }) {
   }, [justUpdated]);
 
   return (
-    <div
-      className={`bg-surface-raised border border-border rounded-md p-3 group ${
-        flash ? "card-flash" : ""
-      }`}
-    >
+    <div 
+    className={`bg-surface-raised border rounded-md p-3 group ${ 
+      isOverdue(card.dueDate) ? "border-danger" : "border-border" 
+      } ${
+        flash ? "card-flash" : ""}`} 
+        >
       <div className="flex items-start justify-between gap-2">
         <p className="text-paper text-sm font-medium leading-snug">{card.title}</p>
         <button
@@ -46,6 +55,12 @@ export default function BoardCard({ card, justUpdated, onDelete }) {
         <span className="font-mono text-[10px] text-paper-dim/70">
           #{String(card.id).padStart(3, "0")} · {timeAgo(card.updatedAt)}
         </span>
+        
+         {
+         card.dueDate && ( <span className={`text-[10px] ${isOverdue(card.dueDate) ? "text-danger" : "text-paper-dim"}`
+        }
+        > Due {card.dueDate} </span> )} 
+
         {card.assigneeName && (
           <span className="text-[10px] bg-teal/15 text-teal rounded px-1.5 py-0.5">
             {card.assigneeName}

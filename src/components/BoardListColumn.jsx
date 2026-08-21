@@ -4,13 +4,14 @@ import BoardCard from "./BoardCard";
 export default function BoardListColumn({ list, recentlyUpdatedIds, onAddCard, onDeleteCard, onDeleteList }) {
   const [adding, setAdding] = useState(false);
   const [title, setTitle] = useState("");
+  const [dueDate, setDueDate] = useState("");
 
   async function handleAdd(e) {
     e.preventDefault();
     if (!title.trim()) return;
-    await onAddCard(list.id, title.trim());
-    setTitle("");
-    setAdding(false);
+    await onAddCard(list.id, title.trim(), dueDate || null);
+     setTitle(""); setDueDate(""); 
+     setAdding(false);
   }
 
   return (
@@ -52,6 +53,12 @@ export default function BoardListColumn({ list, recentlyUpdatedIds, onAddCard, o
               if (e.key === "Escape") setAdding(false);
             }}
           />
+          <input
+           type="date" 
+           className="input-field text-sm" 
+           value={dueDate} 
+           onChange={(e) => setDueDate(e.target.value)} 
+           />
           <div className="flex gap-2">
             <button type="submit" className="btn-primary text-xs px-3 py-1.5">
               Add
