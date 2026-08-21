@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useDroppable } from "@dnd-kit/core";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import BoardCard from "./BoardCard";
 
 export default function BoardListColumn({ list, recentlyUpdatedIds, onAddCard, onDeleteCard, onDeleteList }) {
@@ -6,17 +8,22 @@ export default function BoardListColumn({ list, recentlyUpdatedIds, onAddCard, o
   const [title, setTitle] = useState("");
   const [dueDate, setDueDate] = useState("");
 
+  const { setNodeRef, isOver } = useDroppable({
+    id: `list-${list.id}`,
+  });
+
   async function handleAdd(e) {
     e.preventDefault();
     if (!title.trim()) return;
     await onAddCard(list.id, title.trim(), dueDate || null);
-     setTitle(""); setDueDate(""); 
-     setAdding(false);
+    setTitle("");
+    setDueDate("");
+    setAdding(false);
   }
 
   return (
     <div className="w-72 shrink-0 bg-surface border border-border rounded-lg p-3 flex flex-col max-h-full">
-            <div className="flex items-center justify-between mb-3 px-1">
+      <div className="flex items-center justify-between mb-3 px-1">
         <h3 className="text-paper font-medium text-sm">{list.title}</h3>
         <div className="flex items-center gap-2">
           <span className="font-mono text-[10px] text-paper-dim">{list.cards.length}</span>
@@ -30,15 +37,25 @@ export default function BoardListColumn({ list, recentlyUpdatedIds, onAddCard, o
         </div>
       </div>
 
-      <div className="space-y-2 overflow-y-auto">
-        {list.cards.map((card) => (
-          <BoardCard
-            key={card.id}
-            card={card}
-            justUpdated={recentlyUpdatedIds.has(card.id)}
-            onDelete={(cardId) => onDeleteCard(cardId)}
-          />
-        ))}
+      <div
+        ref={setNodeRef}
+        className={`space-y-2 overflow-y-auto min-h-[40px] rounded-md transition-colors ${
+          isOver ? "bg-teal/10" : ""
+        }`}
+      >
+        <SortableContext
+          items={list.cards.map((c) => `card-${c.id}`)}
+          strategy={verticalListSortingStrategy}
+        >
+          {list.cards.map((card) => (
+            <BoardCard
+              key={card.id}
+              card={card}
+              justUpdated={recentlyUpdatedIds.has(card.id)}
+              onDelete={(cardId) => onDeleteCard(cardId)}
+            />
+          ))}
+        </SortableContext>
       </div>
 
       {adding ? (
@@ -54,11 +71,11 @@ export default function BoardListColumn({ list, recentlyUpdatedIds, onAddCard, o
             }}
           />
           <input
-           type="date" 
-           className="input-field text-sm" 
-           value={dueDate} 
-           onChange={(e) => setDueDate(e.target.value)} 
-           />
+            type="date"
+            className="input-field text-sm"
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
+          />
           <div className="flex gap-2">
             <button type="submit" className="btn-primary text-xs px-3 py-1.5">
               Add
