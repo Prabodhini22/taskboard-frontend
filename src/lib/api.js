@@ -34,11 +34,12 @@ export const api = {
   listBoards: () => request("/boards"),
   createBoard: (data) => request("/boards", { method: "POST", body: JSON.stringify(data) }),
   getBoardDetail: (boardId) => request(`/boards/${boardId}`),
+  getBoardActivity: (boardId) => request(`/boards/${boardId}/activity`),
 
   createList: (boardId, data) =>
     request(`/boards/${boardId}/lists`, { method: "POST", body: JSON.stringify(data) }),
 
-   deleteList: (boardId, listId) => 
+  deleteList: (boardId, listId) =>
     request(`/boards/${boardId}/lists/${listId}`, { method: "DELETE" }),
 
   createCard: (boardId, listId, data) =>

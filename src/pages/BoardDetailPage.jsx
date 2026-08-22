@@ -4,6 +4,7 @@ import { DndContext, PointerSensor, useSensor, useSensors, closestCorners } from
 import { api } from "../lib/api";
 import { subscribeToBoard } from "../lib/socket";
 import BoardListColumn from "../components/BoardListColumn";
+import ActivityFeed from "../components/ActivityFeed";
 
 export default function BoardDetailPage() {
   const { boardId } = useParams();
@@ -13,6 +14,8 @@ export default function BoardDetailPage() {
   const [newListTitle, setNewListTitle] = useState("");
   const [connected, setConnected] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [activities, setActivities] = useState([]);
+  const [showActivity, setShowActivity] = useState(false);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
@@ -41,15 +44,25 @@ export default function BoardDetailPage() {
       .finally(() => setLoading(false));
   }, [boardId]);
 
+  const loadActivity = useCallback(() => {
+    api.getBoardActivity(boardId).then(setActivities).catch(() => {});
+  }, [boardId]);
+
   useEffect(() => {
     loadBoard();
-  }, [loadBoard]);
+    loadActivity();
+  }, [loadBoard, loadActivity]);
 
   // Live updates: merge incoming WebSocket events into local state
   useEffect(() => {
     const unsubscribe = subscribeToBoard(boardId, (event) => {
       setConnected(true);
       const { type, payload } = event;
+
+      if (type === "ACTIVITY_LOGGED") {
+        setActivities((prev) => [payload, ...prev].slice(0, 20));
+        return;
+      }
 
       setLists((prevLists) => {
         switch (type) {
@@ -214,13 +227,27 @@ export default function BoardDetailPage() {
             ← Boards
           </Link>
         </div>
-        <div className="flex items-center gap-2 text-xs text-paper-dim">
-          <span
-            className={`w-1.5 h-1.5 rounded-full ${connected ? "bg-teal" : "bg-paper-dim"}`}
-          />
-          {connected ? "Live" : "Connecting…"}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowActivity((v) => !v)}
+            className="text-paper-dim hover:text-paper text-xs border border-border rounded px-2 py-1"
+          >
+            {showActivity ? "Hide activity" : "Show activity"}
+          </button>
+          <div className="flex items-center gap-2 text-xs text-paper-dim">
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${connected ? "bg-teal" : "bg-paper-dim"}`}
+            />
+            {connected ? "Live" : "Connecting…"}
+          </div>
         </div>
       </header>
+
+      {showActivity && (
+        <div className="px-6 py-3 border-b border-border bg-surface/50">
+          <ActivityFeed activities={activities} />
+        </div>
+      )}
 
       <main className="flex-1 px-6 py-6 overflow-x-auto">
         {!loading && (
